@@ -7,4 +7,10 @@ module "networking" {
     public_subnets_cidr  = ["10.0.100.0/24", "10.0.101.0/24", "10.0.102.0/24"]
 }
 
+# module "security" {
+#     source = "./modules/security"
+#     vpc_id = module.networking.vpc_id
+  
+# }
+
 
