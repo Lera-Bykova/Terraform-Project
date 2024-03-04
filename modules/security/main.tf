@@ -46,15 +46,6 @@ resource "aws_security_group_rule" "allow_https" {
   ipv6_cidr_blocks  = ["::/0"]
   security_group_id = aws_security_group.allow_https.id
 }
-resource "aws_security_group_rule" "allow_https_3000" {
-  type              = "ingress"
-  from_port         = 3000
-  to_port           = 3000
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  ipv6_cidr_blocks  = ["::/0"]
-  security_group_id = aws_security_group.allow_http.id
-}
 
 
 # SSH port 22
