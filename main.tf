@@ -20,4 +20,13 @@ module "dynamo" {
   
 }
 
+module "servers" {
+  source = "./modules/servers"
+  instance_type      = var.instance_type
+  security_group_ids = module.security.security_group_ids
+  public_subnets     = module.networking.public_subnets
+  private_subnets = module.networking.private_subnets
+  
+  }
+
 
