@@ -4,6 +4,7 @@ resource "aws_vpc" "project_vpc" {
     tags = {
     Name = var.vpc_name
   }
+  enable_dns_hostnames = true 
 }
 
 # Subnets

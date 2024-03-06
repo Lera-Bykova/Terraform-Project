@@ -60,7 +60,7 @@ resource "aws_security_group_rule" "ssh" {
   from_port   = 22
   to_port     = 22
   protocol = "tcp"
-  cidr_blocks = ["${chomp(data.http.myipaddr.response_body)}/32"]
+  cidr_blocks = ["${chomp(data.http.myipaddr.response_body)}/32","10.0.0.0/16"]
   security_group_id = aws_security_group.allow_ssh.id
 }
 
@@ -81,3 +81,19 @@ resource "aws_security_group_rule" "allow_egress" {
   ipv6_cidr_blocks  = ["::/0"]
   security_group_id = aws_security_group.allow_egress.id
 }
+
+# BASTION HOST?
+# resource "aws_security_group" "allow_ssh_bastion" {
+#   name        = "allow_ssh_bastion"
+#   description = "Allow ssh inbound traffic"
+#   vpc_id      = var.vpc_id
+# }
+# resource "aws_security_group_rule" "ssh" {
+#   type = "ingress"
+#   from_port   = 22
+#   to_port     = 22
+#   protocol = "tcp"
+#   cidr_blocks = ["${chomp(data.http.myipaddr.response_body)}/32"]
+#   security_group_id = aws_security_group.allow_ssh.id
+#   source_security_group_id = aws_security_group.allow_ssh
+# }
