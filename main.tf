@@ -31,13 +31,29 @@ module "servers" {
 
 module "load_balancer" {
     source = "./modules/loadBalancers"
+
     public_subnets = module.networking.public_subnets
     private_subnets = module.networking.private_subnets
+
     security_groups = module.security.security_group_ids
     vpc_id = module.networking.vpc_id
+
     lighting_instance_id = module.servers.lighting_instance_id
     heating_instance_id = module.servers.heating_instance_id
     auth_instance_id = module.servers.auth_instance_id
     status_instance_id = module.servers.status_instance_id
+
+    autoscaling_group_auth_name = module.autoscaling.autoscaling_group_auth_name
+    autoscaling_group_heating_name = module.autoscaling.autoscaling_group_heating_name
+    autoscaling_group_lighting_name = module.autoscaling.autoscaling_group_lighting_name
+    autoscaling_group_status_name = module.autoscaling.autoscaling_group_status_name
+}
+
+module "autoscaling" {
+    source = "./modules/autoscaling"
+
+    security_group_ids = module.security.security_group_ids
+    public_subnets_ids = module.networking.public_subnets
+    private_subnets_ids = module.networking.private_subnets
   
 }
