@@ -15,6 +15,15 @@ resource "aws_lb_target_group_attachment" "heating" {
   port             = 3000
 }
 
+resource "aws_autoscaling_attachment" "autoscaling_group_attachment_heating" {
+  autoscaling_group_name = var.autoscaling_group_heating_name
+  lb_target_group_arn    = aws_lb_target_group.target_group_heating.arn
+}
+
+
+
+
+
 resource "aws_lb_target_group" "target_group_lighting" {
   name     = "tg-lighting"
   port     = 3000
@@ -30,6 +39,10 @@ resource "aws_lb_target_group_attachment" "lighting" {
     target_group_arn = aws_lb_target_group.target_group_lighting.arn
   target_id        = var.lighting_instance_id
   port             = 3000
+}
+resource "aws_autoscaling_attachment" "autoscaling_group_attachment_lighting" {
+  autoscaling_group_name = var.autoscaling_group_lighting_name
+  lb_target_group_arn    = aws_lb_target_group.target_group_lighting.arn
 }
 
 resource "aws_lb_target_group" "target_group_status" {
@@ -49,6 +62,11 @@ resource "aws_lb_target_group_attachment" "status" {
   port             = 3000
 }
 
+resource "aws_autoscaling_attachment" "autoscaling_group_attachment_status" {
+  autoscaling_group_name = var.autoscaling_group_status_name
+  lb_target_group_arn    = aws_lb_target_group.target_group_status.arn
+}
+
 resource "aws_lb_target_group" "target_group_auth" {
   name     = "tg-auth"
   port     = 3000
@@ -65,6 +83,16 @@ resource "aws_lb_target_group_attachment" "auth" {
   target_id        = var.auth_instance_id
   port             = 3000
 }
+
+resource "aws_autoscaling_attachment" "autoscaling_group_attachment_auth" {
+  autoscaling_group_name = var.autoscaling_group_auth_name
+  lb_target_group_arn    = aws_lb_target_group.target_group_auth.arn
+}
+
+
+
+
+
 
 
 resource "aws_lb" "load_balancer_public" {
@@ -83,6 +111,9 @@ resource "aws_lb" "load_balancer_private" {
   subnets            = var.private_subnets
 }
 
+
+
+
 resource "aws_lb_listener" "public_listener" {
   load_balancer_arn = aws_lb.load_balancer_public.arn
   port              = "3000"
@@ -93,6 +124,19 @@ resource "aws_lb_listener" "public_listener" {
     target_group_arn = aws_lb_target_group.target_group_status.arn
   }
 }
+
+resource "aws_lb_listener" "private_listener" {
+  load_balancer_arn = aws_lb.load_balancer_private.arn
+  port              = "3000"
+  protocol          = "HTTP"
+  
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group_auth.arn
+  }
+}
+
+
 
 resource "aws_lb_listener_rule" "heating" {
   listener_arn = aws_lb_listener.public_listener.arn
@@ -128,13 +172,3 @@ resource "aws_lb_listener_rule" "lighting" {
 
 # Not really sure what to do with the private load balancer...
 
-resource "aws_lb_listener" "private_listener" {
-  load_balancer_arn = aws_lb.load_balancer_private.arn
-  port              = "3000"
-  protocol          = "HTTP"
-  
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.target_group_auth.arn
-  }
-}
