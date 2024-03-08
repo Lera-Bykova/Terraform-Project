@@ -38,15 +38,16 @@ module "load_balancer" {
     security_groups = module.security.security_group_ids
     vpc_id = module.networking.vpc_id
 
-    lighting_instance_id = module.servers.lighting_instance_id
-    heating_instance_id = module.servers.heating_instance_id
-    auth_instance_id = module.servers.auth_instance_id
-    status_instance_id = module.servers.status_instance_id
+    # lighting_instance_id = module.servers.lighting_instance_id
+    # heating_instance_id = module.servers.heating_instance_id
+    # auth_instance_id = module.servers.auth_instance_id
+    # status_instance_id = module.servers.status_instance_id
 
     autoscaling_group_auth_name = module.autoscaling.autoscaling_group_auth_name
     autoscaling_group_heating_name = module.autoscaling.autoscaling_group_heating_name
     autoscaling_group_lighting_name = module.autoscaling.autoscaling_group_lighting_name
     autoscaling_group_status_name = module.autoscaling.autoscaling_group_status_name
+
 }
 
 module "autoscaling" {
@@ -55,5 +56,11 @@ module "autoscaling" {
     security_group_ids = module.security.security_group_ids
     public_subnets_ids = module.networking.public_subnets
     private_subnets_ids = module.networking.private_subnets
-  
+    availability_zones = ["eu-west-2a"]
+    instance_type = "t2.micro"
+    key_name = "My Key"
+    public_template_names = ["heating","lighting", "status"]
+    private_template_names = ["auth"]
+    public_image_ids = ["ami-061e2c1299899774e","ami-0cea140a02d5d5b4e","ami-07bbd1cf9274240d0"]
+    private_image_ids = ["ami-0e5e2bd9df5db4536"]
 }

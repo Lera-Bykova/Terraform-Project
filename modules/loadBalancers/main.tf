@@ -6,23 +6,19 @@ resource "aws_lb_target_group" "target_group_heating" {
   vpc_id   = var.vpc_id
   health_check {
     protocol = "HTTP"
-    path = "/health-check"
+    path = "/api/heating/health"
 }
 }
-resource "aws_lb_target_group_attachment" "heating" {
-    target_group_arn = aws_lb_target_group.target_group_heating.arn
-  target_id        = var.heating_instance_id
-  port             = 3000
-}
+# resource "aws_lb_target_group_attachment" "heating" {
+#     target_group_arn = aws_lb_target_group.target_group_heating.arn
+#   target_id        = var.heating_instance_id
+#   port             = 3000
+# }
 
 resource "aws_autoscaling_attachment" "autoscaling_group_attachment_heating" {
   autoscaling_group_name = var.autoscaling_group_heating_name
   lb_target_group_arn    = aws_lb_target_group.target_group_heating.arn
 }
-
-
-
-
 
 resource "aws_lb_target_group" "target_group_lighting" {
   name     = "tg-lighting"
@@ -32,18 +28,20 @@ resource "aws_lb_target_group" "target_group_lighting" {
   vpc_id   = var.vpc_id
   health_check {
     protocol = "HTTP"
-    path = "/health-check"
+    path = "/api/lights/health"
 }
 }
-resource "aws_lb_target_group_attachment" "lighting" {
-    target_group_arn = aws_lb_target_group.target_group_lighting.arn
-  target_id        = var.lighting_instance_id
-  port             = 3000
-}
+# resource "aws_lb_target_group_attachment" "lighting" {
+#     target_group_arn = aws_lb_target_group.target_group_lighting.arn
+#   target_id        = var.lighting_instance_id
+#   port             = 3000
+# }
+
 resource "aws_autoscaling_attachment" "autoscaling_group_attachment_lighting" {
   autoscaling_group_name = var.autoscaling_group_lighting_name
   lb_target_group_arn    = aws_lb_target_group.target_group_lighting.arn
 }
+
 
 resource "aws_lb_target_group" "target_group_status" {
   name     = "tg-status"
@@ -53,19 +51,21 @@ resource "aws_lb_target_group" "target_group_status" {
   vpc_id   = var.vpc_id
   health_check {
     protocol = "HTTP"
-    path = "/health-check"
+    path = "/api/status/health"
 }
 }
-resource "aws_lb_target_group_attachment" "status" {
-    target_group_arn = aws_lb_target_group.target_group_status.arn
-  target_id        = var.status_instance_id
-  port             = 3000
-}
+# resource "aws_lb_target_group_attachment" "status" {
+#     target_group_arn = aws_lb_target_group.target_group_status.arn
+#   target_id        = var.status_instance_id
+#   port             = 3000
+# }
 
 resource "aws_autoscaling_attachment" "autoscaling_group_attachment_status" {
   autoscaling_group_name = var.autoscaling_group_status_name
   lb_target_group_arn    = aws_lb_target_group.target_group_status.arn
 }
+
+
 
 resource "aws_lb_target_group" "target_group_auth" {
   name     = "tg-auth"
@@ -78,11 +78,11 @@ resource "aws_lb_target_group" "target_group_auth" {
     path = "/health-check"
 }
 }
-resource "aws_lb_target_group_attachment" "auth" {
-    target_group_arn = aws_lb_target_group.target_group_auth.arn
-  target_id        = var.auth_instance_id
-  port             = 3000
-}
+# resource "aws_lb_target_group_attachment" "auth" {
+#     target_group_arn = aws_lb_target_group.target_group_auth.arn
+#   target_id        = var.auth_instance_id
+#   port             = 3000
+# }
 
 resource "aws_autoscaling_attachment" "autoscaling_group_attachment_auth" {
   autoscaling_group_name = var.autoscaling_group_auth_name
@@ -116,7 +116,7 @@ resource "aws_lb" "load_balancer_private" {
 
 resource "aws_lb_listener" "public_listener" {
   load_balancer_arn = aws_lb.load_balancer_public.arn
-  port              = "3000"
+  port              = "80"
   protocol          = "HTTP"
   
   default_action {
@@ -149,7 +149,7 @@ resource "aws_lb_listener_rule" "heating" {
 
   condition {
     path_pattern {
-      values = ["/api/heating/*"]
+      values = ["/api/heating*"]
     }
   }
 }
@@ -165,10 +165,8 @@ resource "aws_lb_listener_rule" "lighting" {
 
   condition {
     path_pattern {
-      values = ["/api/lights/*"]
+      values = ["/api/lights*"]
     }
   }
 }
-
-# Not really sure what to do with the private load balancer...
 
